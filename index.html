@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Video Caption Generator</title>
+    <style>
+        body { font-family: Arial; padding: 20px; max-width: 600px; margin: auto; }
+        button { padding: 10px 20px; margin-top: 10px; background: #0969da; color: white; border: none; cursor: pointer; }
+        #captions { margin-top: 20px; border: 1px solid #ccc; padding: 15px; min-height: 100px; white-space: pre-wrap; }
+    </style>
+</head>
+<body>
+    <h2>Video Upload करके English Captions पाओ</h2>
+    <form id="uploadForm">
+        <input type="file" id="videoFile" accept="video/*" required><br>
+        <button type="submit">Generate Captions</button>
+    </form>
+    <h3>Captions:</h3>
+    <div id="captions">यहाँ captions आएंगे...</div>
+    <p id="status"></p>
+
+    <script>
+        document.getElementById('uploadForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const status = document.getElementById('status');
+            const captionsDiv = document.getElementById('captions');
+
+            status.innerText = "Uploading... फिर captions बन रहे हैं। 1-2 min लगेगा";
+            captionsDiv.innerText = "";
+
+            let formData = new FormData();
+            formData.append('video', document.getElementById('videoFile').files[0]);
+
+            try {
+                let response = await fetch('/upload', { method: 'POST', body: formData });
+                let data = await response.json();
+                captionsDiv.innerText = data.captions || data.error;
+                status.innerText = "हो गया ✅";
+            } catch (error) {
+                status.innerText = "Error: Backend चालू है क्या?";
+            }
+        }
+    </script>
+</body>
+</html>
